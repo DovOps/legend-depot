@@ -40,8 +40,8 @@ import org.finos.legend.depot.store.api.projects.UpdateProjects;
 import org.finos.legend.depot.services.api.metrics.query.QueryMetricsRegistry;
 import org.finos.legend.depot.services.api.notifications.queue.Queue;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -191,17 +191,17 @@ public class ProjectsServiceImpl implements ProjectsService
         }
         else
         {
-            throw new IllegalArgumentException(String.format(NOT_FOUND_IN_STORE, groupId, artifactId, versionId));
+            throw new IllegalArgumentException(NOT_FOUND_IN_STORE.formatted(groupId, artifactId, versionId));
         }
         ProjectVersionData versionData = projectVersion.get().getVersionData();
         if (versionData.isExcluded())
         {
-            throw new IllegalArgumentException(String.format(EXCLUSION_FOUND_IN_STORE, groupId, artifactId, version, versionData.getExclusionReason()));
+            throw new IllegalArgumentException(EXCLUSION_FOUND_IN_STORE.formatted(groupId, artifactId, version, versionData.getExclusionReason()));
         }
         else if (projectVersion.get().isEvicted())
         {
             restoreEvictedProjectVersion(groupId, artifactId, version);
-            throw new IllegalStateException(String.format("Project version: %s-%s-%s is being restored, please retry in 5 minutes", groupId, artifactId, version));
+            throw new IllegalStateException("Project version: %s-%s-%s is being restored, please retry in 5 minutes".formatted(groupId, artifactId, version));
         }
         metricsRegistry.record(groupId, artifactId, version);
         return version;
@@ -210,9 +210,9 @@ public class ProjectsServiceImpl implements ProjectsService
     @Override
     public void checkExists(String groupId, String artifactId) throws IllegalArgumentException
     {
-        if (!this.projects.find(groupId, artifactId).isPresent())
+        if (this.projects.find(groupId, artifactId).isEmpty())
         {
-            throw new IllegalArgumentException(String.format("No project found for %s-%s",groupId,artifactId));
+            throw new IllegalArgumentException("No project found for %s-%s".formatted(groupId, artifactId));
         }
     }
 
@@ -235,7 +235,7 @@ public class ProjectsServiceImpl implements ProjectsService
                 }
                 else
                 {
-                    throw new IllegalStateException(String.format("Error calculating transitive dependencies for project version - %s-%s-%s", projectData.getGroupId(), projectData.getArtifactId(), projectData.getVersionId()));
+                    throw new IllegalStateException("Error calculating transitive dependencies for project version - %s-%s-%s".formatted(projectData.getGroupId(), projectData.getArtifactId(), projectData.getVersionId()));
                 }
             }
         });
@@ -282,7 +282,7 @@ public class ProjectsServiceImpl implements ProjectsService
                 }
                 else
                 {
-                    throw new IllegalStateException(String.format("Error calculating transitive dependencies for project version - %s-%s-%s", versionData.getGroupId(), versionData.getArtifactId(), versionData.getVersionId()));
+                    throw new IllegalStateException("Error calculating transitive dependencies for project version - %s-%s-%s".formatted(versionData.getGroupId(), versionData.getArtifactId(), versionData.getVersionId()));
                 }
         });
         dependencies.forEach(dep -> graphWalkerContext.addVersionToProject(dep.getGroupId(), dep.getArtifactId(), dep));
@@ -364,14 +364,14 @@ public class ProjectsServiceImpl implements ProjectsService
     private StoreProjectVersionData getProject(String groupId, String artifactId, String versionId)
     {
         Optional<StoreProjectVersionData> projectData = this.find(groupId, artifactId, versionId);
-        if (!projectData.isPresent())
+        if (projectData.isEmpty())
         {
-            throw new IllegalArgumentException(String.format(NOT_FOUND_IN_STORE, groupId, artifactId, versionId));
+            throw new IllegalArgumentException(NOT_FOUND_IN_STORE.formatted(groupId, artifactId, versionId));
         }
         ProjectVersionData versionData = projectData.get().getVersionData();
         if (versionData.isExcluded())
         {
-            throw new IllegalArgumentException(String.format(EXCLUSION_FOUND_IN_STORE, groupId, artifactId, versionId, versionData.getExclusionReason()));
+            throw new IllegalArgumentException(EXCLUSION_FOUND_IN_STORE.formatted(groupId, artifactId, versionId, versionData.getExclusionReason()));
         }
         return projectData.get();
     }

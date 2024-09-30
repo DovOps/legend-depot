@@ -60,7 +60,7 @@ public abstract class AbstractEntityRefreshHandlerImpl
 
     private String getGAVCoordinates(String groupId,String artifactId, String versionId)
     {
-        return String.format("%s-%s-%s", groupId, artifactId, versionId);
+        return "%s-%s-%s".formatted(groupId, artifactId, versionId);
     }
 
 
@@ -74,12 +74,12 @@ public abstract class AbstractEntityRefreshHandlerImpl
             List<Entity> entityList = getEntities(files);
             if (entityList != null && !entityList.isEmpty())
             {
-                String message = String.format("found [%s] %s for [%s] ", entityList.size(), this.entitiesProvider.getType(), gavCoordinates);
+                String message = "found [%s] %s for [%s] ".formatted(entityList.size(), this.entitiesProvider.getType(), gavCoordinates);
                 getLOGGER().info(message);
                 response.addMessage(message);
                 if (VersionValidator.isSnapshotVersion(versionId))
                 {
-                    message = String.format("removing prior %s artifacts for [%s-%s]",this.entitiesProvider.getType(),gavCoordinates,versionId);
+                    message = "removing prior %s artifacts for [%s-%s]".formatted(this.entitiesProvider.getType(), gavCoordinates, versionId);
                     response.addMessage(message);
                     response.addMessage("deleted " + getEntitiesApi().delete(groupId, artifactId,versionId));
                     LOGGER.info(message);
@@ -88,7 +88,7 @@ public abstract class AbstractEntityRefreshHandlerImpl
             }
             else
             {
-                String message = String.format("found 0 %s for [%s] ",this.entitiesProvider.getType(), gavCoordinates);
+                String message = "found 0 %s for [%s] ".formatted(this.entitiesProvider.getType(), gavCoordinates);
                 getLOGGER().info(message);
                 response.addMessage(message);
             }
@@ -96,7 +96,7 @@ public abstract class AbstractEntityRefreshHandlerImpl
         }
         catch (Exception e)
         {
-            String errorMessage = String.format("Unexpected exception refreshing %s %s-%s-%s , %s",entitiesProvider.getType(),groupId,artifactId,versionId,e.getMessage());
+            String errorMessage = "Unexpected exception refreshing %s %s-%s-%s , %s".formatted(entitiesProvider.getType(), groupId, artifactId, versionId, e.getMessage());
             response.addError(errorMessage);
             LOGGER.error(errorMessage);
         }

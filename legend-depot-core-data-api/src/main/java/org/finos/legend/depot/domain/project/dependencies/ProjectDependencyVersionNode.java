@@ -66,13 +66,13 @@ public class ProjectDependencyVersionNode extends VersionedData implements HasId
     @JsonIgnore
     public String getGav()
     {
-        return String.format("%s:%s:%s", this.getGroupId(), getArtifactId(), this.getVersionId());
+        return "%s:%s:%s".formatted(this.getGroupId(), getArtifactId(), this.getVersionId());
     }
 
     @JsonIgnore
     public String getCoordinates()
     {
-        return String.format("%s:%s", this.getGroupId(), getArtifactId());
+        return "%s:%s".formatted(this.getGroupId(), getArtifactId());
     }
 
     public String getId()

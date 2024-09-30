@@ -22,13 +22,13 @@ import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.finos.legend.depot.core.services.api.metrics.PrometheusMetricsHandler;
 import org.finos.legend.depot.core.services.tracing.resources.TracingResource;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -218,9 +218,9 @@ public class DepotPrometheusMetricsHandler implements  PrometheusMetricsHandler
     {
             Arrays.stream(baseResource.getMethods()).forEach(m ->
             {
-                if (m.isAnnotationPresent(ApiOperation.class))
+                if (m.isAnnotationPresent(Operation.class))
                 {
-                    ApiOperation val = m.getAnnotation(ApiOperation.class);
+                    Operation val = m.getAnnotation(Operation.class);
                     String metricName = (val.nickname() != null && !val.nickname().isEmpty() ? val.nickname() : val.value());
                     PrometheusMetricsFactory.getInstance().registerSummary(metricName, metricName);
                 }

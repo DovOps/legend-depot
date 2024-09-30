@@ -16,8 +16,10 @@
 package org.finos.legend.depot.core.services.authorisation;
 
 import org.finos.legend.depot.core.services.api.authorisation.AuthorisationProvider;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestBasicAuthorisationProvider
 {
@@ -26,20 +28,24 @@ public class TestBasicAuthorisationProvider
     {
         AuthorisationProvider provider = new BasicAuthorisationProvider();
         provider.authorise(() -> () -> "test","admin");
-        Assert.assertTrue(true);
+        Assertions.assertTrue(true);
     }
 
-    @Test(expected = SecurityException.class)
+    @Test
     public void failAuthorise()
     {
-        AuthorisationProvider provider = new BasicAuthorisationProvider();
-        provider.authorise(() -> () -> "test", "notknownrole");
+        assertThrows(SecurityException.class, () -> {
+            AuthorisationProvider provider = new BasicAuthorisationProvider();
+            provider.authorise(() -> () -> "test", "notknownrole");
+        });
     }
 
-    @Test(expected = SecurityException.class)
+    @Test
     public void userFailAuthorise()
     {
-        AuthorisationProvider provider = new BasicAuthorisationProvider();
-        provider.authorise(() -> () -> "notauthorised", "admin");
+        assertThrows(SecurityException.class, () -> {
+            AuthorisationProvider provider = new BasicAuthorisationProvider();
+            provider.authorise(() -> () -> "notauthorised", "admin");
+        });
     }
 }

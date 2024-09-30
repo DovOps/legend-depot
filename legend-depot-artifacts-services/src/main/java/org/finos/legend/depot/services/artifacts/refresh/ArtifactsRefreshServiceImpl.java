@@ -32,7 +32,7 @@ import org.finos.legend.depot.core.services.tracing.TracerFactory;
 import org.finos.legend.sdlc.domain.model.version.VersionId;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +79,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
         return executeWithTrace(REFRESH_ALL_VERSIONS_FOR_ALL_PROJECTS,allVersionAllProjects, () ->
                 {
                     MetadataNotificationResponse result = new MetadataNotificationResponse();
-                    String message = String.format("Executing: [%s-%s-%s], parentEventId :[%s], full/allVersions/transitive :[%s/%s/%s]",ALL,ALL,ALL,parentEvent,fullUpdate,allVersions,transitive);
+                    String message = "Executing: [%s-%s-%s], parentEventId :[%s], full/allVersions/transitive :[%s/%s/%s]".formatted(ALL, ALL, ALL, parentEvent, fullUpdate, allVersions, transitive);
                     result.addMessage(message);
                     LOGGER.info(message);
                     ParallelIterate.forEach(projects.getAllProjectCoordinates(),project -> result.combine(refreshAllVersionsForProject(project.getGroupId(),project.getArtifactId(),fullUpdate,allVersions,transitive,parentEvent)), PARALLEL_ITERATE_BATCH_SIZE);
@@ -106,7 +106,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
         return executeWithTrace(REFRESH_ALL_SNAPSHOT_FOR_ALL_PROJECTS,masterSnapshotAllProjects, () ->
                 {
                     MetadataNotificationResponse result = new MetadataNotificationResponse();
-                    String message = String.format("Executing: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s]",ALL,ALL,ALL_SNAPSHOT,parentEvent,fullUpdate,transitive);
+                    String message = "Executing: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s]".formatted(ALL, ALL, ALL_SNAPSHOT, parentEvent, fullUpdate, transitive);
                     result.addMessage(message);
                     LOGGER.info(message);
                     ParallelIterate.forEach(projects.getAllProjectCoordinates(),project -> result.combine(refreshAllDefaultSNAPSHOTVersionsForProject(project,fullUpdate,transitive,parentEvent)), PARALLEL_ITERATE_BATCH_SIZE);
@@ -124,7 +124,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
         return executeWithTrace(REFRESH_ALL_VERSIONS_FOR_PROJECT, allVersionForProject, () ->
         {
             MetadataNotificationResponse result = new MetadataNotificationResponse();
-            String message = String.format("Executing: [%s-%s-%s], parentEventId :[%s], full/allVersions/transitive :[%s/%s/%s]", groupId, artifactId, ALL, parentEvent, fullUpdate, allVersions, transitive);
+            String message = "Executing: [%s-%s-%s], parentEventId :[%s], full/allVersions/transitive :[%s/%s/%s]".formatted(groupId, artifactId, ALL, parentEvent, fullUpdate, allVersions, transitive);
             result.addMessage(message);
             LOGGER.info(message);
             result.combine(refreshAllDefaultSNAPSHOTVersionsForProject(projectData, fullUpdate, transitive, parentEvent));
@@ -140,7 +140,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
         Optional<StoreProjectVersionData> storeProjectVersionData = this.projects.find(projectData.getGroupId(), projectData.getArtifactId(), VersionAlias.HEAD.getName());
         if (storeProjectVersionData.isPresent() && !storeProjectVersionData.get().isEvicted())
         {
-            String message = String.format("Executing: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s]", projectData.getGroupId(), projectData.getArtifactId(), storeProjectVersionData.get().getVersionData(), parentEvent, fullUpdate, transitive);
+            String message = "Executing: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s]".formatted(projectData.getGroupId(), projectData.getArtifactId(), storeProjectVersionData.get().getVersionData(), parentEvent, fullUpdate, transitive);
             LOGGER.info(message);
             response.addMessage(queueWorkToRefreshProjectVersion(projectData, storeProjectVersionData.get().getVersionId(), fullUpdate,transitive, parentEventId));
         }
@@ -157,7 +157,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
         return executeWithTrace(REFRESH_PROJECT_VERSION_ARTIFACTS, versionForProject, () ->
         {
             MetadataNotificationResponse result = new MetadataNotificationResponse();
-            String message = String.format("Executing: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s]",groupId,artifactId,versionId,parentEvent,fullUpdate,transitive);
+            String message = "Executing: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s]".formatted(groupId, artifactId, versionId, parentEvent, fullUpdate, transitive);
             result.addMessage(message);
             LOGGER.info(message);
             result.addMessage(queueWorkToRefreshProjectVersion(projectData, versionId, fullUpdate, transitive, parentEvent));
@@ -170,7 +170,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
         String parentEventId = ParentEvent.build(projectData.getGroupId(), projectData.getArtifactId(), ALL, parentEvent);
         MetadataNotificationResponse response = new MetadataNotificationResponse();
 
-        String projectArtifacts = String.format("%s: [%s-%s]", projectData.getProjectId(), projectData.getGroupId(), projectData.getArtifactId());
+        String projectArtifacts = "%s: [%s-%s]".formatted(projectData.getProjectId(), projectData.getGroupId(), projectData.getArtifactId());
         if (this.repositoryServices.areValidCoordinates(projectData.getGroupId(), projectData.getArtifactId()))
         {
             LOGGER.info("Fetching {} versions from repository", projectArtifacts);
@@ -200,7 +200,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
                 }
                 if (!candidateVersions.isEmpty())
                 {
-                    String versionInfoMessage = String.format("%s found [%s] versions to update: %s", projectArtifacts, candidateVersions.size(), candidateVersions);
+                    String versionInfoMessage = "%s found [%s] versions to update: %s".formatted(projectArtifacts, candidateVersions.size(), candidateVersions);
                     LOGGER.info(versionInfoMessage);
                     response.addMessage(versionInfoMessage);
                     candidateVersions.forEach(v -> response.addMessage(queueWorkToRefreshProjectVersion(projectData, v.toVersionIdString(), true, transitive, parentEventId)));
@@ -210,7 +210,7 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
         }
         else
         {
-            String badCoordinatesMessage = String.format("invalid coordinates : [%s-%s] ", projectData.getGroupId(), projectData.getArtifactId());
+            String badCoordinatesMessage = "invalid coordinates : [%s-%s] ".formatted(projectData.getGroupId(), projectData.getArtifactId());
             LOGGER.error(badCoordinatesMessage);
             response.logError(badCoordinatesMessage);
         }
@@ -224,14 +224,14 @@ public class ArtifactsRefreshServiceImpl implements ArtifactsRefreshService
 
     private String queueWorkToRefreshProjectVersion(StoreProjectData projectData, String versionId, boolean fullUpdate, boolean transitive, String parentEvent)
     {
-        return String.format("queued: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s],event id :[%s] ",
-                projectData.getGroupId(),projectData.getArtifactId(),versionId,parentEvent,fullUpdate,transitive,this.workQueue.push(new MetadataNotification(projectData.getProjectId(),projectData.getGroupId(),projectData.getArtifactId(),versionId,fullUpdate,transitive,parentEvent)));
+        return "queued: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s],event id :[%s] ".formatted(
+                projectData.getGroupId(), projectData.getArtifactId(), versionId, parentEvent, fullUpdate, transitive, this.workQueue.push(new MetadataNotification(projectData.getProjectId(), projectData.getGroupId(), projectData.getArtifactId(), versionId, fullUpdate, transitive, parentEvent)));
     }
 
     private StoreProjectData getProject(String groupId, String artifactId)
     {
         Optional<StoreProjectData> found = projects.findCoordinates(groupId, artifactId);
-        if (!found.isPresent())
+        if (found.isEmpty())
         {
             throw new IllegalArgumentException("can't find project for " + groupId + "-" + artifactId);
         }

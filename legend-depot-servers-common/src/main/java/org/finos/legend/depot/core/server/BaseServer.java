@@ -28,9 +28,9 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
-import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
 import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.component.LifeCycle;
@@ -47,8 +47,8 @@ import org.finos.legend.server.shared.bundles.OpenTracingBundle;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.slf4j.Logger;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.FilterRegistration;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterRegistration;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -193,7 +193,7 @@ public abstract class BaseServer<T extends ServerConfiguration> extends Applicat
     private void initialisePrometheusMetrics(Environment environment)
     {
         MetricRegistry metricRegistry = environment.metrics();
-        CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
+        PrometheusRegistry collectorRegistry = PrometheusRegistry.defaultRegistry;
         collectorRegistry.register(new DropwizardExports(metricRegistry));
         environment.admin().addServlet("prometheus", new MetricsServlet(collectorRegistry)).addMapping("/prometheus");
     }

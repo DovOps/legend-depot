@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.finos.legend.depot.core.services.api.authorisation.AuthorisationProvider;
 
-import javax.inject.Provider;
+import jakarta.inject.Provider;
 import java.io.IOException;
 import java.net.URL;
 import java.security.Principal;
@@ -58,11 +58,11 @@ public final class BasicAuthorisationProvider implements AuthorisationProvider
     {
         if (authorisedIdentities.get(role) == null)
         {
-            throw new SecurityException(String.format("Unknown role [%s]", role));
+            throw new SecurityException("Unknown role [%s]".formatted(role));
         }
         if (authorisedIdentities.get(role).stream().noneMatch(p -> principalProvider.get().getName().equals(p)))
         {
-            throw new SecurityException(String.format("User [%s] not authorised for role [%s]", principalProvider.get().getName(), role));
+            throw new SecurityException("User [%s] not authorised for role [%s]".formatted(principalProvider.get().getName(), role));
         }
     }
 }

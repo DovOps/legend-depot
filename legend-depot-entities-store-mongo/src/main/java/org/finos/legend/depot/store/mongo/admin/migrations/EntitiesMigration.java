@@ -99,18 +99,18 @@ public final class EntitiesMigration
                             Updates.combine(
                                 Updates.set(ENTITY_TYPE, ENTITY_TYPE_DATA),
                                 Updates.set(ENTITY_ATTRIBUTES, (Map<String,?>) entityAttributes)));
-                        LOGGER.info(String.format("%s-%s-%s-%s update completed", groupId, artifactId, versionId, path));
+                        LOGGER.info("%s-%s-%s-%s update completed".formatted(groupId, artifactId, versionId, path));
                     }
                     catch (Exception e)
                     {
                         LOGGER.info("Error while updating entities: " + e);
-                        LOGGER.info(String.format("%s-%s-%s-%s entity update could not be completed", groupId, artifactId, versionId, path));
+                        LOGGER.info("%s-%s-%s-%s entity update could not be completed".formatted(groupId, artifactId, versionId, path));
                     }
             });
             i.incrementAndGet();
-            LOGGER.info(String.format("[%s] versions updated", i.get()));
+            LOGGER.info("[%s] versions updated".formatted(i.get()));
         });
-        LOGGER.info(String.format("Entities update completed", i.get()));
+        LOGGER.info("Entities update completed".formatted(i.get()));
     }
 
     private List<ProjectVersion> getAllStoredEntitiesCoordinates()

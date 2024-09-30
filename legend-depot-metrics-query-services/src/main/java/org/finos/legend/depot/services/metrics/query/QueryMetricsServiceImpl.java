@@ -23,7 +23,7 @@ import org.finos.legend.depot.store.api.metrics.query.QueryMetrics;
 import org.finos.legend.depot.store.model.metrics.query.VersionQueryMetric;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -102,11 +102,11 @@ public class QueryMetricsServiceImpl implements QueryMetricsService
             {
                 VersionQueryMetric metric = getSummary(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()).get();
                 long deletedResult = metricsStore.consolidate(metric);
-                LOGGER.info(String.format("Deleted [%s] records for project version: %s-%s-%s", deletedResult, pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
+                LOGGER.info("Deleted [%s] records for project version: %s-%s-%s".formatted(deletedResult, pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
             }
             catch (Exception e)
             {
-                LOGGER.error(String.format("Error consolidating metrics for %s-%s-%s with error: %s", pv.getGroupId(), pv.getArtifactId(), pv.getVersionId(), e.getMessage()));
+                LOGGER.error("Error consolidating metrics for %s-%s-%s with error: %s".formatted(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId(), e.getMessage()));
             }
         });
         LOGGER.info("Completed consolidating metrics for all project version");

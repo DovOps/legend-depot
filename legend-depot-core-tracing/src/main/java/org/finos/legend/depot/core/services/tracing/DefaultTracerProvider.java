@@ -21,7 +21,7 @@ import brave.opentracing.BraveTracer;
 import brave.propagation.CurrentTraceContext;
 import brave.sampler.Sampler;
 import io.opentracing.Tracer;
-import io.prometheus.client.CollectorRegistry;
+import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.finos.legend.depot.core.services.api.tracing.configuration.OpenTracingConfiguration;
 import org.finos.legend.depot.core.services.api.tracing.configuration.TracerProvider;
 import org.finos.legend.engine.shared.core.operational.prometheus.TracingExports;
@@ -70,7 +70,7 @@ public class DefaultTracerProvider implements TracerProvider
 
     protected InMemoryReporterMetrics getMemoryMetricsReporter()
     {
-        CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
+        PrometheusRegistry collectorRegistry = PrometheusRegistry.defaultRegistry;
         InMemoryReporterMetrics tracingMetrics = new InMemoryReporterMetrics();
         collectorRegistry.register(new TracingExports(tracingMetrics));
         return tracingMetrics;

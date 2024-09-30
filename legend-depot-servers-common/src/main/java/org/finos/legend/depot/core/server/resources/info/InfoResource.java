@@ -19,17 +19,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.finos.legend.depot.core.server.ServerConfiguration;
 import org.finos.legend.depot.core.server.info.InfoService;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 
-@Api("Info")
+@Tag(name = "Info")
 @Path("")
 public class InfoResource
 {
@@ -46,7 +46,7 @@ public class InfoResource
     @GET
     @Path("/info")
     @Produces({"application/json"})
-    @ApiOperation("Provides server information")
+    @Operation(summary = "Provides server information")
     public InfoService.ServerInfo getServerInfo()
     {
         return this.infoService.getServerInfo();
@@ -55,7 +55,7 @@ public class InfoResource
 
     @GET
     @Path("/config")
-    @ApiOperation("Provides server config")
+    @Operation(summary = "Provides server config")
     public String getServerConfig() throws JsonProcessingException
     {
         return new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS).setSerializationInclusion(JsonInclude.Include.NON_EMPTY).writeValueAsString(configuration);

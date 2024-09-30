@@ -26,7 +26,7 @@ import org.finos.legend.depot.domain.version.VersionValidator;
 import org.finos.legend.depot.core.services.metrics.PrometheusMetricsFactory;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -113,7 +113,7 @@ public class VersionsReconciliationServiceImpl implements VersionsReconciliation
             }
             catch (Exception e)
             {
-                String message = String.format("Could not get versions for %s:%s exception: %s ", p.getGroupId(), p.getArtifactId(), e.getMessage());
+                String message = "Could not get versions for %s:%s exception: %s ".formatted(p.getGroupId(), p.getArtifactId(), e.getMessage());
                 LOGGER.error(message);
                 versionMismatches.add(new VersionMismatch(p.getProjectId(), p.getGroupId(), p.getArtifactId(), Collections.emptyList(), Collections.emptyList(), Arrays.asList(message)));
                 repoExceptions.addAndGet(1);
@@ -157,7 +157,7 @@ public class VersionsReconciliationServiceImpl implements VersionsReconciliation
             }
             catch (Exception e)
             {
-                String message = String.format("Could not update project %s:%s exception: %s ", p.getGroupId(), p.getArtifactId(), e.getMessage());
+                String message = "Could not update project %s:%s exception: %s ".formatted(p.getGroupId(), p.getArtifactId(), e.getMessage());
                 LOGGER.error(message);
                 projectUpdateExceptions.addAndGet(1);
             }

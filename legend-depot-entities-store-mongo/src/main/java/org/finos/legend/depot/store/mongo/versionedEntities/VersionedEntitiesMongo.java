@@ -29,8 +29,8 @@ import org.finos.legend.depot.store.model.versionedEntities.StoredVersionedEntit
 import org.finos.legend.depot.store.mongo.entities.EntitiesMongo;
 import org.finos.legend.sdlc.domain.model.entity.Entity;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,19 +76,19 @@ public class VersionedEntitiesMongo extends EntitiesMongo<StoredVersionedEntity>
     @Override
     protected Entity resolvedToEntityDefinition(StoredVersionedEntity storedEntity)
     {
-        if (storedEntity instanceof StoredVersionedEntityData)
+        if (storedEntity instanceof StoredVersionedEntityData data)
         {
-            return ((StoredVersionedEntityData) storedEntity).getEntity();
+            return data.getEntity();
         }
-        else if (storedEntity instanceof StoredVersionedEntityStringData)
+        else if (storedEntity instanceof StoredVersionedEntityStringData data)
         {
             try
             {
-                return objectMapper.readValue(((StoredVersionedEntityStringData)storedEntity).getData(), EntityDefinition.class);
+                return objectMapper.readValue(data.getData(), EntityDefinition.class);
             }
             catch (JsonProcessingException e)
             {
-                throw new IllegalStateException(String.format("Error: %s while fetching entity: %s-%s-%s-%s", e.getMessage(), storedEntity.getGroupId(), storedEntity.getArtifactId(), storedEntity.getVersionId(), ((StoredVersionedEntityStringData)storedEntity).getEntityAttributes().get("path")));
+                throw new IllegalStateException("Error: %s while fetching entity: %s-%s-%s-%s".formatted(e.getMessage(), storedEntity.getGroupId(), storedEntity.getArtifactId(), storedEntity.getVersionId(), data.getEntityAttributes().get("path")));
             }
         }
         else

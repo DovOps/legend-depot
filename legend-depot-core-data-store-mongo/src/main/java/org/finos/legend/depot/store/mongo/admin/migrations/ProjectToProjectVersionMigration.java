@@ -86,23 +86,23 @@ public final class ProjectToProjectVersionMigration
             {
                 List<String> versions = document.getList("versions",String.class);
 
-                LOGGER.info(String.format("versions that should be inserted [%s]",versions.size()));
+                LOGGER.info("versions that should be inserted [%s]".formatted(versions.size()));
                 versionCollection.insertOne(BaseMongo.buildDocument(createStoreProjectData(document, BRANCH_SNAPSHOT("master"))));
-                LOGGER.info(String.format("%s-%s-%s insertion completed",groupId,artifactId, BRANCH_SNAPSHOT("master")));
+                LOGGER.info("%s-%s-%s insertion completed".formatted(groupId, artifactId, BRANCH_SNAPSHOT("master")));
 
                 versions.forEach(version ->
                 {
                     versionCollection.insertOne(BaseMongo.buildDocument(createStoreProjectData(document, version)));
-                    LOGGER.info(String.format("%s-%s-%s insertion completed",groupId, artifactId, version));
+                    LOGGER.info("%s-%s-%s insertion completed".formatted(groupId, artifactId, version));
                     i.incrementAndGet();
                 });
-                LOGGER.info(String.format("versions inserted [%s]",i.get()));
+                LOGGER.info("versions inserted [%s]".formatted(i.get()));
             }
             catch (Exception e)
             {
                 LOGGER.info("Error while inserting data:" + e.getMessage());
-                LOGGER.info(String.format("versions inserted [%s] before error",i.get()));
-                LOGGER.info(String.format("%s-%s insertion could not be completed",groupId, artifactId));
+                LOGGER.info("versions inserted [%s] before error".formatted(i.get()));
+                LOGGER.info("%s-%s insertion could not be completed".formatted(groupId, artifactId));
             }
         });
     }
@@ -123,17 +123,17 @@ public final class ProjectToProjectVersionMigration
                                 Filters.eq(BaseMongo.ARTIFACT_ID, artifactId)),
                                 Updates.combine(Updates.unset("versions"), Updates.unset("dependencies"), Updates.unset("properties"), Updates.unset("latestVersion")));
                 i.incrementAndGet();
-                LOGGER.info(String.format("%s-%s updation completed", groupId, artifactId));
+                LOGGER.info("%s-%s updation completed".formatted(groupId, artifactId));
             }
             catch (Exception e)
             {
                 LOGGER.info("Error while updating data: " + e);
 
-                LOGGER.info(String.format("versions updated [%s] before error", i.get()));
-                LOGGER.info(String.format("%s-%s updated could not be completed", groupId, artifactId));
+                LOGGER.info("versions updated [%s] before error".formatted(i.get()));
+                LOGGER.info("%s-%s updated could not be completed".formatted(groupId, artifactId));
             }
         });
-        LOGGER.info(String.format("versions updated [%s]", i.get()));
+        LOGGER.info("versions updated [%s]".formatted(i.get()));
     }
 
     @Deprecated
@@ -159,18 +159,18 @@ public final class ProjectToProjectVersionMigration
                 Optional<VersionId> latestVersion = parsedVersions.stream().max(Comparator.comparing(Function.identity()));
                 if (latestVersion.isPresent())
                 {
-                    LOGGER.info(String.format("%s-%s updated with latest version", groupId, artifactId));
+                    LOGGER.info("%s-%s updated with latest version".formatted(groupId, artifactId));
                     projectCollection.updateOne(Filters.and(Filters.eq(BaseMongo.GROUP_ID, groupId),
                             Filters.eq(BaseMongo.ARTIFACT_ID, artifactId)), Updates.set("latestVersion", latestVersion.get().toVersionIdString()));
-                    LOGGER.info(String.format("%s-%s update completed",groupId,artifactId));
+                    LOGGER.info("%s-%s update completed".formatted(groupId, artifactId));
                 }
-                LOGGER.info(String.format("projects updated [%s]",i.incrementAndGet()));
+                LOGGER.info("projects updated [%s]".formatted(i.incrementAndGet()));
             }
             catch (Exception e)
             {
                 LOGGER.info("Error while updating data:" + e.getMessage());
-                LOGGER.info(String.format("projects updated [%s] before error",i.get()));
-                LOGGER.info(String.format("%s-%s update could not be completed",groupId, artifactId));
+                LOGGER.info("projects updated [%s] before error".formatted(i.get()));
+                LOGGER.info("%s-%s update could not be completed".formatted(groupId, artifactId));
             }
         });
     }

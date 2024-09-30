@@ -27,6 +27,10 @@
     <name>Legend Depot - Generations - Services</name>
     <artifactId>legend-depot-generations-services</artifactId>
     <packaging>jar</packaging>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <!-- DEPOT -->
@@ -59,8 +63,9 @@
             <artifactId>guice</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>2.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.collections</groupId>
@@ -108,6 +113,12 @@
             <artifactId>legend-depot-store-mongo</artifactId>
             <classifier>tests</classifier>
             <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.1</version>
             <scope>test</scope>
         </dependency>
 

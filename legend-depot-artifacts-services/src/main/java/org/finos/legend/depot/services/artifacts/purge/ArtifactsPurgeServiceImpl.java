@@ -32,7 +32,7 @@ import org.finos.legend.depot.core.services.tracing.TracerFactory;
 import org.finos.legend.depot.core.services.metrics.PrometheusMetricsFactory;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,7 +90,7 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
     private StoreProjectVersionData getProjectVersion(String groupId, String artifactId, String versionId)
     {
         Optional<StoreProjectVersionData> found = projects.find(groupId, artifactId, versionId);
-        if (!found.isPresent())
+        if (found.isEmpty())
         {
             throw new IllegalArgumentException("can't find project for " + groupId + SEPARATOR + artifactId);
         }
@@ -111,7 +111,7 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
                 }
             });
             PrometheusMetricsFactory.getInstance().incrementCount(VERSION_DELETE_COUNTER);
-            LOGGER.info(String.format("%s-%s-%s artifacts deleted", groupId, artifactId, versionId));
+            LOGGER.info("%s-%s-%s artifacts deleted".formatted(groupId, artifactId, versionId));
             return projects.delete(groupId, artifactId, versionId);
         },decorateSpanWithVersionInfo(groupId, artifactId, versionId));
     }
@@ -130,9 +130,9 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
                 }
             });
             StoreProjectVersionData projectData = getProjectVersion(groupId, artifactId, versionId);
-            LOGGER.info(String.format("%s-%s-%s artifacts deleted", groupId, artifactId, versionId));
+            LOGGER.info("%s-%s-%s artifacts deleted".formatted(groupId, artifactId, versionId));
             projectData.setEvicted(true);
-            LOGGER.info(String.format("%s-%s-%s evicted", groupId, artifactId, versionId));
+            LOGGER.info("%s-%s-%s evicted".formatted(groupId, artifactId, versionId));
             PrometheusMetricsFactory.getInstance().incrementCount(VERSION_PURGE_COUNTER);
             return projects.createOrUpdate(projectData);
         },decorateSpanWithVersionInfo(groupId, artifactId, versionId));
@@ -146,7 +146,7 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
             MetadataNotificationResponse response = new MetadataNotificationResponse();
             StoreProjectVersionData projectData = getProjectVersion(groupId, artifactId, versionId);
             projectData.getVersionData().setDeprecated(true);
-            response.addMessage(String.format("%s-%s-%s deprecated", groupId, artifactId, versionId));
+            response.addMessage("%s-%s-%s deprecated".formatted(groupId, artifactId, versionId));
             projects.createOrUpdate(projectData);
             return response;
         },decorateSpanWithVersionInfo(groupId, artifactId, versionId));
@@ -162,9 +162,9 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
             {
                 versionMismatch.versionsNotInRepository.forEach(versionId ->
                 {
-                    LOGGER.info(String.format("Deprecating project version: %s-%s-%s", versionMismatch.groupId, versionMismatch.artifactId, versionId));
+                    LOGGER.info("Deprecating project version: %s-%s-%s".formatted(versionMismatch.groupId, versionMismatch.artifactId, versionId));
                     deprecate(versionMismatch.groupId, versionMismatch.artifactId, versionId);
-                    response.addMessage(String.format("Deprecated project version: %s-%s-%s", versionMismatch.groupId, versionMismatch.artifactId, versionId));
+                    response.addMessage("Deprecated project version: %s-%s-%s".formatted(versionMismatch.groupId, versionMismatch.artifactId, versionId));
                 });
             }
         },10);
@@ -187,13 +187,13 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
                     String versionId = versionIds.get(0);
                     evict(groupId, artifactId, versionId);
                     versionIds.remove(versionId);
-                    response.addMessage(String.format("%s-%s-%s evicted", groupId, artifactId, versionId));
+                    response.addMessage("%s-%s-%s evicted".formatted(groupId, artifactId, versionId));
                 }
-                response.addMessage(String.format("%s-%s evicted %s versions", groupId, artifactId, numberOfVersions - versionIds.size()));
+                response.addMessage("%s-%s evicted %s versions".formatted(groupId, artifactId, numberOfVersions - versionIds.size()));
             }
             catch (Exception e)
             {
-                String errorMessage = String.format(" Error evicting old versions %s-%s %s",groupId,artifactId,e.getMessage());
+                String errorMessage = " Error evicting old versions %s-%s %s".formatted(groupId, artifactId, e.getMessage());
                 LOGGER.error(errorMessage);
                 response.addError(errorMessage);
                 PrometheusMetricsFactory.getInstance().incrementErrorCount(VERSION_PURGE_COUNTER);
@@ -220,12 +220,12 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
         }
         catch (Exception e)
         {
-            LOGGER.error(String.format("Error while applying retention policy: %s", e.getMessage()));
+            LOGGER.error("Error while applying retention policy: %s".formatted(e.getMessage()));
         }
         evictProjectVersions.parallelStream().forEach(pv ->
         {
             evict(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId());
-            response.addMessage(String.format("Evicted project version: %s", pv.getGav()));
+            response.addMessage("Evicted project version: %s".formatted(pv.getGav()));
         });
         return response;
     }
@@ -252,12 +252,12 @@ public class ArtifactsPurgeServiceImpl implements ArtifactsPurgeService
         }
         catch (Exception e)
         {
-            LOGGER.error(String.format("Error while evicting versions not being used: %s", e.getMessage()));
+            LOGGER.error("Error while evicting versions not being used: %s".formatted(e.getMessage()));
         }
         evictProjectVersions.parallelStream().forEach(pv ->
         {
             evict(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId());
-            response.addMessage(String.format("Evicted project version: %s", pv.getGav()));
+            response.addMessage("Evicted project version: %s".formatted(pv.getGav()));
         });
         return response;
     }

@@ -29,7 +29,7 @@ import org.finos.legend.depot.core.services.tracing.TracerFactory;
 import org.finos.legend.sdlc.domain.model.entity.Entity;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -105,7 +105,7 @@ public class EntitiesServiceImpl<T extends StoredEntity> implements EntitiesServ
             }
             return deps;
         });
-        TracerFactory.get().log(String.format("dependencies: [%s] ",dependencies.size()));
+        TracerFactory.get().log("dependencies: [%s] ".formatted(dependencies.size()));
         PrometheusMetricsFactory.getInstance().observeHistogram(DEPENDENCIES_SIZE,dependencies.size());
         LOGGER.info("finished calculating [{}] dependencies",dependencies.size());
 
@@ -127,9 +127,9 @@ public class EntitiesServiceImpl<T extends StoredEntity> implements EntitiesServ
                 }
                 depEntities.add(new ProjectVersionEntities(dep.getGroupId(), dep.getArtifactId(), version, deps));
                 totalEntities.addAndGet(deps.size());
-                TracerFactory.get().log(String.format("Total [%s-%s-%s]: [%s] entities",dep.getGroupId(), dep.getArtifactId(), dep.getVersionId(),deps.size()));
+                TracerFactory.get().log("Total [%s-%s-%s]: [%s] entities".formatted(dep.getGroupId(), dep.getArtifactId(), dep.getVersionId(), deps.size()));
             });
-            TracerFactory.get().log(String.format("Total [%s]: [%s] entities",depEntities.size(),totalEntities));
+            TracerFactory.get().log("Total [%s]: [%s] entities".formatted(depEntities.size(), totalEntities));
             return depEntities;
         });
     }

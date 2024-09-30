@@ -24,7 +24,7 @@ import org.finos.legend.depot.services.api.projects.ProjectsService;
 import org.finos.legend.depot.services.dependencies.DependencyUtil;
 import org.finos.legend.depot.services.projects.ProjectsServiceImpl;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 public class CoreDataServicesModule extends PrivateModule
 {

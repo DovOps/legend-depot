@@ -15,13 +15,16 @@
 
 package org.finos.legend.depot.core.server.error;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
+
+import java.io.Serial;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class LegendDepotServerException extends RuntimeException
 {
+    @Serial
     private static final long serialVersionUID = -427388642530259672L;
     private static final Response.Status DEFAULT_STATUS = Response.Status.INTERNAL_SERVER_ERROR;
 

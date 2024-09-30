@@ -27,8 +27,8 @@ import org.finos.legend.depot.domain.artifacts.repository.ArtifactDependency;
 import org.finos.legend.depot.store.model.projects.StoreProjectVersionData;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -71,17 +71,17 @@ public class RefreshDependenciesServiceImpl implements RefreshDependenciesServic
         {
             projectVersions.forEach(deps ->
             {
-                LOGGER.info(String.format("Finding dependencies for %s-%s-%s", deps.getGroupId(), deps.getArtifactId(), deps.getVersionId()));
+                LOGGER.info("Finding dependencies for %s-%s-%s".formatted(deps.getGroupId(), deps.getArtifactId(), deps.getVersionId()));
                 Optional<StoreProjectVersionData> projectData = this.projects.find(deps.getGroupId(), deps.getArtifactId(), deps.getVersionId());
                 if (projectData.isPresent())
                 {
                     if (projectData.get().getVersionData().isExcluded())
                     {
-                        throw new IllegalStateException(String.format("Project Version depending on an excluded version: %s", deps.getGav()));
+                        throw new IllegalStateException("Project Version depending on an excluded version: %s".formatted(deps.getGav()));
                     }
                     else if (!projectData.get().getTransitiveDependenciesReport().isValid())
                     {
-                        throw new IllegalStateException(String.format("Cannot calculate dependencies for project version: %s", deps.getGav()));
+                        throw new IllegalStateException("Cannot calculate dependencies for project version: %s".formatted(deps.getGav()));
                     }
                     List<ProjectVersion> allDependencies = new ArrayList<>(projectData.get().getVersionData().getDependencies());
                     allDependencies.addAll(projectData.get().getTransitiveDependenciesReport().getTransitiveDependencies());
@@ -89,13 +89,13 @@ public class RefreshDependenciesServiceImpl implements RefreshDependenciesServic
                 }
                 else
                 {
-                    LOGGER.info(String.format("Finding dependencies for %s-%s-%s as no data is present in the store", deps.getGroupId(), deps.getArtifactId(), deps.getVersionId()));
+                    LOGGER.info("Finding dependencies for %s-%s-%s as no data is present in the store".formatted(deps.getGroupId(), deps.getArtifactId(), deps.getVersionId()));
                     List<ProjectVersion> dependencies = this.retrieveDependenciesFromRepository(deps.getGroupId(), deps.getArtifactId(), deps.getVersionId());
                     projectDependencies.addAll(dependencies);
                     VersionDependencyReport report = calculateTransitiveDependencies(dependencies);
                     if (!report.isValid())
                     {
-                        throw new IllegalStateException(String.format("Cannot calculate dependencies for project version: %s", deps.getGav()));
+                        throw new IllegalStateException("Cannot calculate dependencies for project version: %s".formatted(deps.getGav()));
                     }
                     else
                     {
@@ -127,7 +127,7 @@ public class RefreshDependenciesServiceImpl implements RefreshDependenciesServic
         {
             if (VersionValidator.isValidReleaseVersion(versionId) && VersionValidator.isSnapshotVersion(dep.getVersionId()))
             {
-                String illegalDepError = String.format("Snapshot dependency %s-%s-%s not allowed in versions", dep.getGroupId(), dep.getArtifactId(), dep.getVersionId());
+                String illegalDepError = "Snapshot dependency %s-%s-%s not allowed in versions".formatted(dep.getGroupId(), dep.getArtifactId(), dep.getVersionId());
                 errors.add(illegalDepError);
                 LOGGER.error(illegalDepError);
             }
@@ -138,14 +138,14 @@ public class RefreshDependenciesServiceImpl implements RefreshDependenciesServic
     public StoreProjectVersionData updateTransitiveDependencies(String groupId, String artifactId, String versionId)
     {
         Optional<StoreProjectVersionData> projectVersionData = this.projects.find(groupId, artifactId, versionId);
-        if (!projectVersionData.isPresent() || projectVersionData.get().getVersionData().isExcluded())
+        if (projectVersionData.isEmpty() || projectVersionData.get().getVersionData().isExcluded())
         {
-            throw new IllegalArgumentException(String.format("project version not found for %s-%s-%s", groupId, artifactId, versionId));
+            throw new IllegalArgumentException("project version not found for %s-%s-%s".formatted(groupId, artifactId, versionId));
         }
         StoreProjectVersionData projectData = projectVersionData.get();
-        LOGGER.info(String.format("Finding dependencies for %s-%s-%s", groupId, artifactId, versionId));
+        LOGGER.info("Finding dependencies for %s-%s-%s".formatted(groupId, artifactId, versionId));
         this.setProjectDataTransitiveDependencies(projectData);
-        LOGGER.info(String.format("Completed finding dependencies for %s-%s-%s", groupId, artifactId, versionId));
+        LOGGER.info("Completed finding dependencies for %s-%s-%s".formatted(groupId, artifactId, versionId));
         projectData = this.projects.createOrUpdate(projectData);
         if (VersionValidator.isSnapshotVersion(projectData.getVersionId()))
         {

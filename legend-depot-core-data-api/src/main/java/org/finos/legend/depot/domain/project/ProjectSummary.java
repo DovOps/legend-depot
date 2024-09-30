@@ -46,7 +46,7 @@ public class ProjectSummary implements Comparable
     public String getMavenCoordinates()
     {
 
-        return String.format("%s-%s", groupId, artifactId);
+        return "%s-%s".formatted(groupId, artifactId);
     }
 
     @Override

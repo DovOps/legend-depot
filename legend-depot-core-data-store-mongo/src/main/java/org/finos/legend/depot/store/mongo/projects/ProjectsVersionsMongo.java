@@ -29,8 +29,8 @@ import org.finos.legend.depot.store.api.projects.ProjectsVersions;
 import org.finos.legend.depot.store.api.projects.UpdateProjectsVersions;
 import org.finos.legend.depot.store.mongo.core.BaseMongo;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -135,11 +135,11 @@ public class ProjectsVersionsMongo extends BaseMongo<StoreProjectVersionData> im
     {
         if (!CoordinateValidator.isValidGroupId(data.getGroupId()) || !CoordinateValidator.isValidArtifactId(data.getArtifactId()))
         {
-            throw new IllegalArgumentException(String.format("invalid groupId [%s] or artifactId [%s]",data.getGroupId(),data.getArtifactId()));
+            throw new IllegalArgumentException("invalid groupId [%s] or artifactId [%s]".formatted(data.getGroupId(), data.getArtifactId()));
         }
         if (!VersionValidator.isValid(data.getVersionId()))
         {
-            throw new IllegalArgumentException(String.format("invalid versionId [%s]",data.getVersionId()));
+            throw new IllegalArgumentException("invalid versionId [%s]".formatted(data.getVersionId()));
         }
     }
 }

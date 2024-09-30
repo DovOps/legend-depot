@@ -49,6 +49,6 @@ public class ProjectVersion extends VersionedData
     @JsonIgnore
     public String getGav()
     {
-        return String.format("%s:%s:%s", this.getGroupId(), getArtifactId(), this.getVersionId());
+        return "%s:%s:%s".formatted(this.getGroupId(), getArtifactId(), this.getVersionId());
     }
 }

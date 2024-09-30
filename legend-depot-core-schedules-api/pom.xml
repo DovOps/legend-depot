@@ -27,6 +27,10 @@
     <name>Legend Depot - Core - Schedules - API</name>
     <artifactId>legend-depot-core-schedules-api</artifactId>
     <packaging>jar</packaging>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
 
     <dependencies>
 

@@ -272,7 +272,7 @@ public abstract class AbstractEntitiesMongo<T extends StoredEntity> extends Base
         }
         catch (JsonProcessingException e)
         {
-            throw new IllegalStateException(String.format("Error: %s while storing entity: %s", e.getMessage(), entity.getPath()));
+            throw new IllegalStateException("Error: %s while storing entity: %s".formatted(e.getMessage(), entity.getPath()));
         }
     }
 

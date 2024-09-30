@@ -19,8 +19,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.jersey.errors.ErrorMessage;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
@@ -61,13 +61,13 @@ class ExtendedErrorMessage extends ErrorMessage
 
     static ExtendedErrorMessage fromThrowable(Throwable t, boolean includeStackTrace)
     {
-        if (t instanceof LegendDepotServerException)
+        if (t instanceof LegendDepotServerException exception)
         {
-            return fromLegendDepotServerException((LegendDepotServerException) t, includeStackTrace);
+            return fromLegendDepotServerException(exception, includeStackTrace);
         }
-        if (t instanceof WebApplicationException)
+        if (t instanceof WebApplicationException exception)
         {
-            return fromWebApplicationException((WebApplicationException) t, includeStackTrace);
+            return fromWebApplicationException(exception, includeStackTrace);
         }
         return fromThrowable(t, getDefaultStatusCode(), null, null, includeStackTrace);
     }

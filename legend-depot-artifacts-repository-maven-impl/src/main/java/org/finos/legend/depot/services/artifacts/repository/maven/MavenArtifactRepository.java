@@ -79,9 +79,9 @@ public class MavenArtifactRepository implements ArtifactRepository
             this.settingsLocation = null;
             return;
         }
-        if (configuration instanceof MavenArtifactRepositoryConfiguration)
+        if (configuration instanceof MavenArtifactRepositoryConfiguration repositoryConfiguration)
         {
-            this.settingsLocation = ((MavenArtifactRepositoryConfiguration)configuration).getSettingsLocation();
+            this.settingsLocation = repositoryConfiguration.getSettingsLocation();
             loadSettings(this.settingsLocation);
         }
         else
@@ -333,7 +333,7 @@ public class MavenArtifactRepository implements ArtifactRepository
         }
         catch (VersionResolutionException ex)
         {
-            String message = String.format("Error resolveVersionsFromRepository %s-%s version resolution issue", group, artifact,ex.getMessage());
+            String message = "Error resolveVersionsFromRepository %s-%s version resolution issue".formatted(group, artifact, ex.getMessage());
             LOGGER.error(message);
             throw new ArtifactRepositoryException(ex);
         }

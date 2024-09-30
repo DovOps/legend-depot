@@ -210,7 +210,7 @@ public abstract class BaseMongo<T extends HasIdentifier>
         }
         catch (Exception e)
         {
-            LOGGER.error(String.format("error converting document (%s) to class %s. reason: %s", Objects.requireNonNull(id).toString(), clazz.getSimpleName(), e.getMessage()));
+            LOGGER.error("error converting document (%s) to class %s. reason: %s".formatted(Objects.requireNonNull(id).toString(), clazz.getSimpleName(), e.getMessage()));
             return null;
         }
     }
@@ -253,7 +253,7 @@ public abstract class BaseMongo<T extends HasIdentifier>
         List<T> result = convert(getCollection().find(filter));
         if (!result.isEmpty() && result.size() > 1)
         {
-            throw new IllegalStateException(String.format(" Found more than one match %s in collection %s",filter,getCollection().getNamespace().getCollectionName()));
+            throw new IllegalStateException(" Found more than one match %s in collection %s".formatted(filter, getCollection().getNamespace().getCollectionName()));
         }
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }

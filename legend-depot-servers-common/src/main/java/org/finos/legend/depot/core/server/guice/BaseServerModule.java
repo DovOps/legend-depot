@@ -27,8 +27,8 @@ import org.finos.legend.depot.store.StorageConfiguration;
 import org.finos.legend.depot.core.services.api.tracing.configuration.OpenTracingConfiguration;
 import org.finos.legend.depot.core.services.api.metrics.configuration.PrometheusConfiguration;
 
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 

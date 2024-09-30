@@ -39,8 +39,8 @@ import org.finos.legend.depot.store.mongo.core.BaseMongo;
 import org.finos.legend.sdlc.domain.model.entity.Entity;
 import org.finos.legend.sdlc.tools.entity.EntityPaths;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,19 +96,19 @@ public class EntitiesMongo<T extends StoredEntity> extends AbstractEntitiesMongo
         List<String> errors = new ArrayList<>();
         if (!CoordinateValidator.isValidGroupId(entity.getGroupId()))
         {
-            errors.add(String.format(EntityValidationErrors.INVALID_GROUP_ID, entity.getGroupId()));
+            errors.add(EntityValidationErrors.INVALID_GROUP_ID.formatted(entity.getGroupId()));
         }
         if (!CoordinateValidator.isValidArtifactId(entity.getArtifactId()))
         {
-            errors.add(String.format(EntityValidationErrors.INVALID_ARTIFACT_ID, entity.getArtifactId()));
+            errors.add(EntityValidationErrors.INVALID_ARTIFACT_ID.formatted(entity.getArtifactId()));
         }
         if (!VersionValidator.isValid(entity.getVersionId()))
         {
-            errors.add(String.format(EntityValidationErrors.INVALID_VERSION_ID, entity.getVersionId()));
+            errors.add(EntityValidationErrors.INVALID_VERSION_ID.formatted(entity.getVersionId()));
         }
         if (!EntityPaths.isValidEntityPath(entity.getEntityAttributes().get(PATH).toString()))
         {
-            errors.add(String.format(EntityValidationErrors.INVALID_ENTITY_PATH, entity.getEntityAttributes().get(PATH).toString()));
+            errors.add(EntityValidationErrors.INVALID_ENTITY_PATH.formatted(entity.getEntityAttributes().get(PATH).toString()));
         }
         if (!errors.isEmpty())
         {
@@ -240,19 +240,19 @@ public class EntitiesMongo<T extends StoredEntity> extends AbstractEntitiesMongo
     @Override
     protected Entity resolvedToEntityDefinition(T storedEntity)
     {
-        if (storedEntity instanceof StoredEntityData)
+        if (storedEntity instanceof StoredEntityData data)
         {
-            return ((StoredEntityData) storedEntity).getEntity();
+            return data.getEntity();
         }
-        else if (storedEntity instanceof StoredEntityStringData)
+        else if (storedEntity instanceof StoredEntityStringData data)
         {
             try
             {
-                return objectMapper.readValue(((StoredEntityStringData)storedEntity).getData(), EntityDefinition.class);
+                return objectMapper.readValue(data.getData(), EntityDefinition.class);
             }
             catch (JsonProcessingException e)
             {
-                throw new IllegalStateException(String.format("Error: %s while fetching entity: %s-%s-%s-%s", e.getMessage(), storedEntity.getGroupId(), storedEntity.getArtifactId(), storedEntity.getVersionId(), ((StoredEntityStringData)storedEntity).getEntityAttributes().get("path")));
+                throw new IllegalStateException("Error: %s while fetching entity: %s-%s-%s-%s".formatted(e.getMessage(), storedEntity.getGroupId(), storedEntity.getArtifactId(), storedEntity.getVersionId(), data.getEntityAttributes().get("path")));
             }
         }
         else

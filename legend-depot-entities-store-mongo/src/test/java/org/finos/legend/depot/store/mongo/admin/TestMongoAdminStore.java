@@ -19,9 +19,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.bson.Document;
 import org.finos.legend.depot.store.mongo.TestStoreMongo;
 import org.finos.legend.depot.store.mongo.entities.test.EntitiesMongoTestUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +31,7 @@ public class TestMongoAdminStore extends TestStoreMongo
     MongoAdminStore mongoAdminStore = new MongoAdminStore(mongoProvider);
 
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         new EntitiesMongoTestUtils(mongoProvider).loadEntities(this.getClass().getClassLoader().getResource("data/versioned-entities.json"));
@@ -40,33 +40,34 @@ public class TestMongoAdminStore extends TestStoreMongo
     @Test
     public void canRunPipelineAsJson() throws JsonProcessingException
     {
-        String pipeline =  "[\n" +
-                "  {\n" +
-                "    \"$limit\": 1000\n" +
-                "  }, {\n" +
-                "  \"$project\": {\n" +
-                "    \"groupId\": \"$groupId\",\n" +
-                "    \"artifactId\": \"$artifactId\",\n" +
-                "    \"count\": {\n" +
-                "      \"$sum\": 1\n" +
-                "    }\n" +
-                "  }\n" +
-                "}, {\n" +
-                "  \"$group\": {\n" +
-                "    \"_id\": {\n" +
-                "      \"group\": \"$groupId\",\n" +
-                "      \"artifact\": \"$artifactId\"\n" +
-                "    },\n" +
-                "    \"total\": {\n" +
-                "      \"$sum\": 1\n" +
-                "    }\n" +
-                "  }\n" +
-                "}\n" +
-                "]";
+        String pipeline =  """
+                [
+                  {
+                    "$limit": 1000
+                  }, {
+                  "$project": {
+                    "groupId": "$groupId",
+                    "artifactId": "$artifactId",
+                    "count": {
+                      "$sum": 1
+                    }
+                  }
+                }, {
+                  "$group": {
+                    "_id": {
+                      "group": "$groupId",
+                      "artifact": "$artifactId"
+                    },
+                    "total": {
+                      "$sum": 1
+                    }
+                  }
+                }
+                ]""";
 
         List<Document> result = mongoAdminStore.runPipeline("entities", pipeline);
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1,result.size());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1,result.size());
 
     }
 
@@ -86,10 +87,10 @@ public class TestMongoAdminStore extends TestStoreMongo
                                .append("total",
                                        new Document("$sum", 1L))));
 
-        Assert.assertEquals(3,mongoProvider.getCollection("entities").countDocuments());
+        Assertions.assertEquals(3,mongoProvider.getCollection("entities").countDocuments());
         List<Document> result = mongoAdminStore.runPipeline("entities", pipeline);
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1,result.size());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1,result.size());
     }
 
 }

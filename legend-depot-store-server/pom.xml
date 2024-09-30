@@ -30,11 +30,18 @@
 
     <properties>
         <mainClass>org.finos.legend.depot.store.server.LegendDepotStoreServer</mainClass>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
         <!-- DEPOT -->
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.finos.legend.depot</groupId>
             <artifactId>legend-depot-servers-common</artifactId>

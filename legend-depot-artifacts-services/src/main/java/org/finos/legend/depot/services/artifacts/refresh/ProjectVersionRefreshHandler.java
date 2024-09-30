@@ -44,7 +44,7 @@ import org.finos.legend.depot.core.services.tracing.TracerFactory;
 import org.finos.legend.depot.core.services.metrics.PrometheusMetricsFactory;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -114,11 +114,11 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
     {
         MetadataNotificationResponse response = new MetadataNotificationResponse();
         Optional<StoreProjectData> existingProject = projects.findCoordinates(versionEvent.getGroupId(), versionEvent.getArtifactId());
-        if (!existingProject.isPresent())
+        if (existingProject.isEmpty())
         {
             StoreProjectData newProject = new StoreProjectData(versionEvent.getProjectId(), versionEvent.getGroupId(), versionEvent.getArtifactId());
             projects.createOrUpdate(newProject);
-            String newProjectMessage = String.format("New project %s created with coordinates %s-%s", newProject.getProjectId(), newProject.getGroupId(), newProject.getArtifactId());
+            String newProjectMessage = "New project %s created with coordinates %s-%s".formatted(newProject.getProjectId(), newProject.getGroupId(), newProject.getArtifactId());
             response.addMessage(newProjectMessage);
             LOGGER.info(newProjectMessage);
         }
@@ -132,28 +132,28 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
 
         if (!CoordinateValidator.isValidGroupId(event.getGroupId()))
         {
-            errors.add(String.format("invalid groupId [%s]",event.getGroupId()));
+            errors.add("invalid groupId [%s]".formatted(event.getGroupId()));
         }
         if (!CoordinateValidator.isValidArtifactId(event.getArtifactId()))
         {
-            errors.add(String.format("invalid artifactId [%s]",event.getArtifactId()));
+            errors.add("invalid artifactId [%s]".formatted(event.getArtifactId()));
         }
         if (!VersionValidator.isValid(event.getVersionId()))
         {
-            errors.add(String.format("invalid versionId [%s]",event.getVersionId()));
+            errors.add("invalid versionId [%s]".formatted(event.getVersionId()));
         }
 
         Optional<StoreProjectData> projectData = projects.findCoordinates(event.getGroupId(),event.getArtifactId());
         if (projectData.isPresent() && projectData.get().getProjectId() != null && !projectData.get().getProjectId().equals(event.getProjectId()))
         {
-            errors.add(String.format("Invalid projectId [%s]. Existing project [%s] has same [%s-%s] coordinates",event.getProjectId(),projectData.get().getProjectId(),event.getGroupId(),event.getArtifactId()));
+            errors.add("Invalid projectId [%s]. Existing project [%s] has same [%s-%s] coordinates".formatted(event.getProjectId(), projectData.get().getProjectId(), event.getGroupId(), event.getArtifactId()));
         }
         if (VersionValidator.isSnapshotVersion(event.getVersionId()))
         {
             List<String> snapshotVersions = projects.findSnapshotVersions(event.getGroupId(), event.getArtifactId()).stream().filter(v -> !v.isEvicted()).map(versionData -> versionData.getVersionId()).collect(Collectors.toList());
             if (!snapshotVersions.contains(event.getVersionId()) && snapshotVersions.size() >= maximumSnapshotsAllowed)
             {
-                errors.add(String.format("Number of snapshot versions stored for project %s-%s, has reached the limit [%s]", event.getGroupId(), event.getArtifactId(), maximumSnapshotsAllowed));
+                errors.add("Number of snapshot versions stored for project %s-%s, has reached the limit [%s]".formatted(event.getGroupId(), event.getArtifactId(), maximumSnapshotsAllowed));
             }
         }
         return errors;
@@ -162,7 +162,7 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
     private StoreProjectData getProject(String groupId, String artifactId)
     {
         Optional<StoreProjectData> found = projects.findCoordinates(groupId, artifactId);
-        if (!found.isPresent())
+        if (found.isEmpty())
         {
             throw new IllegalArgumentException("can't find project for " + groupId + "-" + artifactId);
         }
@@ -172,9 +172,9 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
     private MetadataNotificationResponse validateGAV(String groupId, String artifactId, String versionId)
     {
         MetadataNotificationResponse response = new MetadataNotificationResponse();
-        if (!projects.findCoordinates(groupId, artifactId).isPresent())
+        if (projects.findCoordinates(groupId, artifactId).isEmpty())
         {
-            String missingProject = String.format("No Project with coordinates %s-%s found", groupId, artifactId);
+            String missingProject = "No Project with coordinates %s-%s found".formatted(groupId, artifactId);
             response.addError(missingProject);
             LOGGER.error(missingProject);
         }
@@ -182,9 +182,9 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
         {
             try
             {
-                if (!this.repositoryServices.findVersion(groupId, artifactId, versionId).isPresent())
+                if (this.repositoryServices.findVersion(groupId, artifactId, versionId).isEmpty())
                 {
-                    String missingVersion = String.format("Version %s does not exist for %s-%s in repository", versionId, groupId, artifactId);
+                    String missingVersion = "Version %s does not exist for %s-%s in repository".formatted(versionId, groupId, artifactId);
                     response.addError(missingVersion);
                     LOGGER.error(missingVersion);
                     return response;
@@ -218,7 +218,7 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
     {
             long refreshStartTime = System.currentTimeMillis();
             MetadataNotificationResponse response = new MetadataNotificationResponse();
-            String message = String.format("Executing: [%s-%s-%s], eventId: [%s], parentEventId: [%s], full/transitive: [%s/%s], attempts: [%s]", event.getGroupId(), event.getArtifactId(),
+            String message = "Executing: [%s-%s-%s], eventId: [%s], parentEventId: [%s], full/transitive: [%s/%s], attempts: [%s]".formatted(event.getGroupId(), event.getArtifactId(),
                     event.getVersionId(), event.getEventId(), event.getParentEventId(), event.isFullUpdate(), event.isTransitive(), event.getAttempt());
             response.addMessage(message);
             LOGGER.info(message);
@@ -247,9 +247,9 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
                         {
                             newDependencies.stream().forEach(dep ->
                             {
-                                if (!projects.find(dep.getGroupId(), dep.getArtifactId(), dep.getVersionId()).isPresent())
+                                if (projects.find(dep.getGroupId(), dep.getArtifactId(), dep.getVersionId()).isEmpty())
                                 {
-                                    String missingDepError = String.format("Dependency %s-%s-%s not found in store", dep.getGroupId(), dep.getArtifactId(), dep.getVersionId());
+                                    String missingDepError = "Dependency %s-%s-%s not found in store".formatted(dep.getGroupId(), dep.getArtifactId(), dep.getVersionId());
                                     response.addError(missingDepError);
                                     LOGGER.error(missingDepError);
                                 }
@@ -266,7 +266,7 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
             }
             catch (Exception e)
             {
-                String errorMessage = String.format("Exception executing: [%s-%s-%s], eventId: [%s], parentEventId: [%s], full/transitive: [%s/%s], attempts: [%s], exception[%s]", event.getGroupId(), event.getArtifactId(),
+                String errorMessage = "Exception executing: [%s-%s-%s], eventId: [%s], parentEventId: [%s], full/transitive: [%s/%s], attempts: [%s], exception[%s]".formatted(event.getGroupId(), event.getArtifactId(),
                         event.getVersionId(), event.getEventId(), event.getParentEventId(), event.isFullUpdate(), event.isTransitive(), event.getAttempt(), e.getMessage());
                 response.addError(errorMessage);
                 LOGGER.error(errorMessage);
@@ -314,8 +314,8 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
 
     private String queueWorkToRefreshProjectVersion(StoreProjectData projectData, String versionId, boolean fullUpdate, boolean transitive, String parentEvent)
     {
-        return String.format("queued: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s],event id :[%s] ",
-                projectData.getGroupId(),projectData.getArtifactId(),versionId,parentEvent,fullUpdate,transitive,this.workQueue.push(new MetadataNotification(projectData.getProjectId(),projectData.getGroupId(),projectData.getArtifactId(),versionId,fullUpdate,transitive,parentEvent)));
+        return "queued: [%s-%s-%s], parentEventId :[%s], full/transitive :[%s/%s],event id :[%s] ".formatted(
+                projectData.getGroupId(), projectData.getArtifactId(), versionId, parentEvent, fullUpdate, transitive, this.workQueue.push(new MetadataNotification(projectData.getProjectId(), projectData.getGroupId(), projectData.getArtifactId(), versionId, fullUpdate, transitive, parentEvent)));
     }
 
     private List<Property> calculateProjectProperties(String groupId, String artifactId, String versionId)
@@ -369,22 +369,22 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
             if (dependent.isPresent())
             {
                 StoreProjectData dependentProject = dependent.get();
-                String projectCoordinates = String.format("[%s-%s-%s]", projectData.getGroupId(), projectData.getArtifactId(), versionId);
-                String dependencyCoordinates = String.format("[%s-%s-%s]", dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersionId());
+                String projectCoordinates = "[%s-%s-%s]".formatted(projectData.getGroupId(), projectData.getArtifactId(), versionId);
+                String dependencyCoordinates = "[%s-%s-%s]".formatted(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersionId());
                 Optional<StoreProjectVersionData> projectVersion = projects.find(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersionId());
                 if (!VersionValidator.isSnapshotVersion(dependency.getVersionId()) && projectVersion.isPresent() && !projectVersion.get().getVersionData().isExcluded())
                 {
-                    response.addMessage(String.format("Skipping update dependency %s -> %s, already in store", projectCoordinates, dependencyCoordinates));
+                    response.addMessage("Skipping update dependency %s -> %s, already in store".formatted(projectCoordinates, dependencyCoordinates));
                 }
                 else
                 {
-                    response.addMessage(String.format("Processing dependency %s -> %s", projectCoordinates, dependencyCoordinates));
+                    response.addMessage("Processing dependency %s -> %s".formatted(projectCoordinates, dependencyCoordinates));
                     response.addMessage(queueWorkToRefreshProjectVersion(dependentProject, dependency.getVersionId(), fullUpdate, transitive, parentEventId));
                 }
             }
             else
             {
-                response.addError(String.format("Could not find dependent project: [%s-%s]", dependency.getGroupId(), dependency.getArtifactId()));
+                response.addError("Could not find dependent project: [%s-%s]".formatted(dependency.getGroupId(), dependency.getArtifactId()));
                 return;
             }
         });
@@ -401,17 +401,17 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
             List<File> files = findArtifactFiles(artifactType, project, versionId, processUnchangedFiles);
             if (files != null && !files.isEmpty())
             {
-                response.addMessage(String.format("[%s] files found [%s] artifacts to process [%s-%s-%s], processUnChangedFiles: %s",files.size(),artifactType,project.getGroupId(),project.getArtifactId(),versionId,processUnchangedFiles));
+                response.addMessage("[%s] files found [%s] artifacts to process [%s-%s-%s], processUnChangedFiles: %s".formatted(files.size(), artifactType, project.getGroupId(), project.getArtifactId(), versionId, processUnchangedFiles));
                 response.combine(refreshHandler.refreshProjectVersionArtifacts(project.getGroupId(),project.getArtifactId(), versionId, files));
             }
             else
             {
-                response.addMessage(String.format("No %s artifacts to process [%s-%s-%s], processUnChangedFiles: %s",artifactType,project.getGroupId(),project.getArtifactId(),versionId,processUnchangedFiles));
+                response.addMessage("No %s artifacts to process [%s-%s-%s], processUnChangedFiles: %s".formatted(artifactType, project.getGroupId(), project.getArtifactId(), versionId, processUnchangedFiles));
             }
         }
         else
         {
-            response.addError(String.format("handler not found for artifact type %s, please check your configuration",artifactType));
+            response.addError("handler not found for artifact type %s, please check your configuration".formatted(artifactType));
         }
         return response;
     }
@@ -429,7 +429,7 @@ public final class ProjectVersionRefreshHandler implements NotificationHandler
         try
         {
             String fileCheckSum = DigestUtils.sha256Hex(new FileInputStream(filePath));
-            if (!artifactDetails.isPresent() || !MessageDigest.isEqual(fileCheckSum.getBytes(), artifactDetails.get().getCheckSum().getBytes()))
+            if (artifactDetails.isEmpty() || !MessageDigest.isEqual(fileCheckSum.getBytes(), artifactDetails.get().getCheckSum().getBytes()))
             {
                 LOGGER.info("loading artifacts from updated file: {}", filePath);
                 LOGGER.info("file check sum: {}", fileCheckSum);

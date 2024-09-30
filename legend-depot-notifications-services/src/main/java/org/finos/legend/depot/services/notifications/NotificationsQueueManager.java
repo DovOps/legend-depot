@@ -26,7 +26,7 @@ import org.finos.legend.depot.core.services.tracing.TracerFactory;
 import org.finos.legend.depot.core.services.metrics.PrometheusMetricsFactory;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,8 +80,8 @@ public class NotificationsQueueManager
         List<String> validationErrors = eventHandler.validate(event);
         if (!validationErrors.isEmpty())
         {
-            String message = String.format("eventId:[%s],parentEventId:[%s],gav:[%s-%s-%s],attempt [%s] completed with validation errors [%s]",
-                    event.getEventId(), event.getParentEventId(),event.getGroupId(),event.getArtifactId(),event.getVersionId(),event.getAttempt(),String.join(DELIMITER,validationErrors));
+            String message = "eventId:[%s],parentEventId:[%s],gav:[%s-%s-%s],attempt [%s] completed with validation errors [%s]".formatted(
+                    event.getEventId(), event.getParentEventId(), event.getGroupId(), event.getArtifactId(), event.getVersionId(), event.getAttempt(), String.join(DELIMITER, validationErrors));
             LOGGER.error(message);
             notifications.createOrUpdate(event.addError(message).complete());
             PrometheusMetricsFactory.getInstance().incrementErrorCount(NOTIFICATIONS_COUNTER);
@@ -92,8 +92,8 @@ public class NotificationsQueueManager
         try
         {
             event.increaseAttempts();
-            String message = String.format("Handling eventId:[%s],parentEventId:[%s],gav: [%s-%s-%s],attempt [%s]",
-                    event.getEventId(),event.getParentEventId(),event.getGroupId(),event.getArtifactId(),event.getVersionId(),event.getAttempt());
+            String message = "Handling eventId:[%s],parentEventId:[%s],gav: [%s-%s-%s],attempt [%s]".formatted(
+                    event.getEventId(), event.getParentEventId(), event.getGroupId(), event.getArtifactId(), event.getVersionId(), event.getAttempt());
             response.addMessage(message);
             LOGGER.info(message);
             response.combine(eventHandler.handleNotification(event));
@@ -109,7 +109,7 @@ public class NotificationsQueueManager
             
                 if (event.retriesExceeded())
                 {
-                    String messageRetry = String.format("eventId:[%s],parentEventId:[%s],gav:[%s-%s-%s], attempt [%s] completed with errors [%s] will not retry [%s] maximum retries exceeded",
+                    String messageRetry = "eventId:[%s],parentEventId:[%s],gav:[%s-%s-%s], attempt [%s] completed with errors [%s] will not retry [%s] maximum retries exceeded".formatted(
                             event.getEventId(), event.getParentEventId(), event.getGroupId(), event.getArtifactId(), event.getVersionId(), event.getAttempt(), String.join(DELIMITER, response.getErrors()), event.getMaxAttempts());
                     event.addError(messageRetry);
                     LOGGER.error(messageRetry);
@@ -119,7 +119,7 @@ public class NotificationsQueueManager
                 }
                 else
                 {
-                    String message = String.format("eventId:[%s],parentEventId:[%s],gav:[%s-%s-%s], attempt [%s] completed with errors [%s] will retry",
+                    String message = "eventId:[%s],parentEventId:[%s],gav:[%s-%s-%s], attempt [%s] completed with errors [%s] will retry".formatted(
                             event.getEventId(), event.getParentEventId(), event.getGroupId(), event.getArtifactId(), event.getVersionId(), event.getAttempt(), String.join(DELIMITER, response.getErrors()));
                     response.addError(message);
                     LOGGER.error(message);
@@ -153,7 +153,7 @@ public class NotificationsQueueManager
         }
         else
         {
-            String errorMessage = String.format("Notification failed validation for project :[%s] gav:[%s-%s-%s] %s",projectId, groupId, artifactId, versionId, String.join(",",validationResponse));
+            String errorMessage = "Notification failed validation for project :[%s] gav:[%s-%s-%s] %s".formatted(projectId, groupId, artifactId, versionId, String.join(",", validationResponse));
             LOGGER.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }

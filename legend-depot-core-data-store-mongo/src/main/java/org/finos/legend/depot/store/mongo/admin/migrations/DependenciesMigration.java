@@ -77,12 +77,12 @@ public final class DependenciesMigration
             versionsToUpdate.forEach(pv ->
             {
                 tempVersionCollection.insertOne(BaseMongo.buildDocument(pv));
-                LOGGER.info(String.format("%s-%s-%s insertion completed",pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
+                LOGGER.info("%s-%s-%s insertion completed".formatted(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
             });
         }
         catch (Exception e)
         {
-            LOGGER.info(String.format("Error while inserting data:%s", e));
+            LOGGER.info("Error while inserting data:%s".formatted(e));
         }
     }
 
@@ -95,11 +95,11 @@ public final class DependenciesMigration
         tempVersionCollection.find().forEach((Consumer<Document>) document -> versionData.add(BaseMongo.convert(new ObjectMapper(), document, StoreProjectVersionData.class)));
         versionData.forEach(pv ->
         {
-            LOGGER.info(String.format("Updating project version with transitive dependencies: %s-%s-%s", pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
+            LOGGER.info("Updating project version with transitive dependencies: %s-%s-%s".formatted(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
             versionsCollection.updateOne(getArtifactAndVersionFilter(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()), Updates.combine(
                     Updates.addEachToSet("transitiveDependenciesReport.transitiveDependencies", buildProjectVersionDocument(pv.getTransitiveDependenciesReport().getTransitiveDependencies())),
                     Updates.set("transitiveDependenciesReport.valid", pv.getTransitiveDependenciesReport().isValid())));
-            LOGGER.info(String.format("Completed updating project version with transitive dependencies: %s-%s-%s", pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
+            LOGGER.info("Completed updating project version with transitive dependencies: %s-%s-%s".formatted(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
         });
     }
 
@@ -111,23 +111,23 @@ public final class DependenciesMigration
         Map<String, StoreProjectVersionData> directDependenciesMap = allProjectsVersions.stream().filter(p -> !p.getVersionData().isExcluded()).collect(Collectors.toMap(p -> p.getGroupId() + p.getArtifactId() + p.getVersionId(), Function.identity()));
         try
         {
-            LOGGER.info(String.format("Dependencies count for calculation: [%s]", versionWithDependencies.size()));
+            LOGGER.info("Dependencies count for calculation: [%s]".formatted(versionWithDependencies.size()));
 
             versionWithDependencies.forEach(pv ->
             {
                 ProjectVersion projectVersion = new ProjectVersion(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId());
-                LOGGER.info(String.format("Finding transitive dependencies for [%s-%s-%s]", pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
+                LOGGER.info("Finding transitive dependencies for [%s-%s-%s]".formatted(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
                 VersionDependencyReport report = this.transitiveDependenciesMap.getIfAbsentPut(projectVersion, () -> calculateTransitiveDependencies(projectVersion, getDependenciesFromMap(directDependenciesMap)));
                 pv.setTransitiveDependenciesReport(report);
-                LOGGER.info(String.format("Completed finding transitive dependencies for [%s-%s-%s]", pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
-                LOGGER.info(String.format("Dependencies calculation count completed: [%s]", i.incrementAndGet()));
+                LOGGER.info("Completed finding transitive dependencies for [%s-%s-%s]".formatted(pv.getGroupId(), pv.getArtifactId(), pv.getVersionId()));
+                LOGGER.info("Dependencies calculation count completed: [%s]".formatted(i.incrementAndGet()));
 
             });
         }
         catch (Exception e)
         {
-            LOGGER.info(String.format("Error finding dependencies: %s", e.getMessage()));
-            throw new IllegalStateException(String.format("Error finding transitive dependencies due to: %s", e.getMessage()));
+            LOGGER.info("Error finding dependencies: %s".formatted(e.getMessage()));
+            throw new IllegalStateException("Error finding transitive dependencies due to: %s".formatted(e.getMessage()));
         }
         versionWithoutDependencies.stream().filter(pv -> pv.getVersionData().isExcluded()).forEach(pv -> pv.getTransitiveDependenciesReport().setValid(false));
         List<StoreProjectVersionData> finalList = new ArrayList<>();
@@ -151,8 +151,8 @@ public final class DependenciesMigration
             {
                 if (versionData.getVersionData().isExcluded())
                 {
-                    LOGGER.error(String.format(EXCLUDED_DEPENDENCY, projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
-                    throw new IllegalStateException(String.format(INVALID_DEPENDENCIES, projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
+                    LOGGER.error(EXCLUDED_DEPENDENCY.formatted(projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
+                    throw new IllegalStateException(INVALID_DEPENDENCIES.formatted(projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
                 }
                 List<ProjectVersion> artifactDependencies = versionData.getVersionData().getDependencies();
                 if (!artifactDependencies.isEmpty())
@@ -168,16 +168,16 @@ public final class DependenciesMigration
                         }
                         else
                         {
-                            LOGGER.error(String.format(INVALID_DEPENDENCIES, dep.getGroupId(), dep.getArtifactId(), dep.getVersionId()));
-                            throw new IllegalStateException(String.format(INVALID_DEPENDENCIES, dep.getGroupId(), dep.getArtifactId(), dep.getVersionId()));
+                            LOGGER.error(INVALID_DEPENDENCIES.formatted(dep.getGroupId(), dep.getArtifactId(), dep.getVersionId()));
+                            throw new IllegalStateException(INVALID_DEPENDENCIES.formatted(dep.getGroupId(), dep.getArtifactId(), dep.getVersionId()));
                         }
                     });
                 }
             }
             else
             {
-                LOGGER.error(String.format(NOT_FOUND_IN_STORE, projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
-                throw new IllegalStateException(String.format(NOT_FOUND_IN_STORE, projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
+                LOGGER.error(NOT_FOUND_IN_STORE.formatted(projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
+                throw new IllegalStateException(NOT_FOUND_IN_STORE.formatted(projectVersion.getGroupId(), projectVersion.getArtifactId(), projectVersion.getVersionId()));
             }
         }
         catch (IllegalStateException e)
@@ -186,8 +186,8 @@ public final class DependenciesMigration
         }
         catch (Exception e)
         {
-            LOGGER.info(String.format("Error finding dependencies: %s", e.getMessage()));
-            throw new IllegalStateException(String.format("Error finding transitive dependencies with message: %s", e.getMessage()));
+            LOGGER.info("Error finding dependencies: %s".formatted(e.getMessage()));
+            throw new IllegalStateException("Error finding transitive dependencies with message: %s".formatted(e.getMessage()));
         }
         return new VersionDependencyReport(dependencies.stream().collect(Collectors.toList()), true);
     }
@@ -213,7 +213,7 @@ public final class DependenciesMigration
             }
             catch (JsonProcessingException e)
             {
-                LOGGER.error(String.format("Error converting project version: %s, to document class", dep.getGav()));
+                LOGGER.error("Error converting project version: %s, to document class".formatted(dep.getGav()));
                 return new Document();
             }
         }).collect(Collectors.toList());

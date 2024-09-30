@@ -14,10 +14,10 @@
 
 package org.finos.legend.depot.core.server.error;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class CatchAllExceptionMapper extends BaseExceptionMapper<Throwable>
@@ -35,7 +35,7 @@ public class CatchAllExceptionMapper extends BaseExceptionMapper<Throwable>
     @Override
     public Response toResponse(Throwable t)
     {
-        return (t instanceof WebApplicationException) ? toResponse((WebApplicationException) t) : buildDefaultResponse(t);
+        return (t instanceof WebApplicationException wae) ? toResponse(wae) : buildDefaultResponse(t);
     }
 
     private Response toResponse(WebApplicationException e)

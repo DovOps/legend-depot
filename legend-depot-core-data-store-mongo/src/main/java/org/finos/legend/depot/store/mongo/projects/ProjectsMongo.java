@@ -29,8 +29,8 @@ import org.finos.legend.depot.store.api.projects.Projects;
 import org.finos.legend.depot.store.api.projects.UpdateProjects;
 import org.finos.legend.depot.store.mongo.core.BaseMongo;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -71,12 +71,12 @@ public class ProjectsMongo extends BaseMongo<StoreProjectData> implements Projec
     {
         if (!ProjectValidator.isValid(data))
         {
-            throw new IllegalArgumentException(String.format("invalid project [%s] or invalid groupId [%s] or artifactId [%s]",data.getProjectId(),data.getGroupId(),data.getArtifactId()));
+            throw new IllegalArgumentException("invalid project [%s] or invalid groupId [%s] or artifactId [%s]".formatted(data.getProjectId(), data.getGroupId(), data.getArtifactId()));
         }
         Optional<StoreProjectData> projectData = find(data.getGroupId(), data.getArtifactId());
         if (projectData.isPresent() && (!data.getProjectId().equals(projectData.get().getProjectId())))
         {
-            throw new StoreException(String.format("Duplicate coordinates: Different project %s its already registered with this coordinates %s-%s", projectData.get().getProjectId(), data.getGroupId(), data.getArtifactId()));
+            throw new StoreException("Duplicate coordinates: Different project %s its already registered with this coordinates %s-%s".formatted(projectData.get().getProjectId(), data.getGroupId(), data.getArtifactId()));
         }
     }
 

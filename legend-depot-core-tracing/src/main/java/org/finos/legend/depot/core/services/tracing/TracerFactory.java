@@ -25,7 +25,7 @@ import io.opentracing.util.GlobalTracer;
 import org.finos.legend.depot.core.services.api.tracing.configuration.OpenTracingConfiguration;
 import org.finos.legend.depot.core.services.api.tracing.configuration.TracerProvider;
 import org.slf4j.Logger;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -154,11 +154,11 @@ public final class TracerFactory
                 map.put(Fields.MESSAGE, e.getMessage());
                 currentSpan.log(map);
                 String traceId = currentSpan.context().toTraceId();
-                message = String.format("[%s] - TraceId [%s]: %s", label, traceId,e.getMessage());
+                message = "[%s] - TraceId [%s]: %s".formatted(label, traceId, e.getMessage());
             }
             else
             {
-                message = String.format("[%s]: %s", label,e.getMessage());
+                message = "[%s]: %s".formatted(label, e.getMessage());
             }
             LOGGER.error(message);
             throw new RuntimeException(message,e);

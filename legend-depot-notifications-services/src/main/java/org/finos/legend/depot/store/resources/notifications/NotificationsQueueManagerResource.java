@@ -15,9 +15,9 @@
 
 package org.finos.legend.depot.store.resources.notifications;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.finos.legend.depot.core.services.api.authorisation.AuthorisationProvider;
 import org.finos.legend.depot.core.services.authorisation.resources.AuthorisedResource;
 import org.finos.legend.depot.core.services.tracing.ResourceLoggingAndTracing;
@@ -25,21 +25,21 @@ import org.finos.legend.depot.domain.notifications.MetadataNotification;
 import org.finos.legend.depot.services.api.notifications.queue.Queue;
 import org.finos.legend.depot.services.notifications.NotificationsQueueManager;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Provider;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
 @Path("")
-@Api("Notifications Queue")
+@Tag(name = "Notifications Queue")
 public class NotificationsQueueManagerResource extends AuthorisedResource
 {
 
@@ -67,7 +67,7 @@ public class NotificationsQueueManagerResource extends AuthorisedResource
 
     @GET
     @Path("/notifications-queue")
-    @ApiOperation(ResourceLoggingAndTracing.GET_ALL_EVENTS_IN_QUEUE)
+    @Operation(summary = ResourceLoggingAndTracing.GET_ALL_EVENTS_IN_QUEUE)
     @Produces(MediaType.APPLICATION_JSON)
     public List<MetadataNotification> getAllEventsInQueue()
     {
@@ -77,7 +77,7 @@ public class NotificationsQueueManagerResource extends AuthorisedResource
 
     @GET
     @Path("/notifications-queue/count")
-    @ApiOperation(ResourceLoggingAndTracing.GET_QUEUE_COUNT)
+    @Operation(summary = ResourceLoggingAndTracing.GET_QUEUE_COUNT)
     @Produces(MediaType.APPLICATION_JSON)
     public long getAllEventsInQueueCount()
     {
@@ -86,7 +86,7 @@ public class NotificationsQueueManagerResource extends AuthorisedResource
 
     @GET
     @Path("/notifications-queue/{eventId}")
-    @ApiOperation(ResourceLoggingAndTracing.GET_EVENT_IN_QUEUE)
+    @Operation(summary = ResourceLoggingAndTracing.GET_EVENT_IN_QUEUE)
     @Produces(MediaType.APPLICATION_JSON)
     public Optional<MetadataNotification> geEventsInQueue(@PathParam("eventId") String eventId)
     {
@@ -96,19 +96,19 @@ public class NotificationsQueueManagerResource extends AuthorisedResource
 
     @GET
     @Path("/queue/{projectId}/{groupId}/{artifactId}/{versionId}")
-    @ApiOperation(ResourceLoggingAndTracing.ENQUEUE_EVENT)
+    @Operation(summary = ResourceLoggingAndTracing.ENQUEUE_EVENT)
     @Produces(MediaType.TEXT_PLAIN)
     public String queueEvent(@PathParam("projectId") String projectId,
                              @PathParam("groupId") String groupId,
                              @PathParam("artifactId") String artifactId,
-                             @PathParam("versionId") @ApiParam("a valid version string: x.y.z, master-SNAPSHOT") String versionId)
+                             @PathParam("versionId") @Parameter(description = "a valid version string: x.y.z, master-SNAPSHOT") String versionId)
     {
         return handle(ResourceLoggingAndTracing.ENQUEUE_EVENT, () -> notificationsManager.notify(projectId, groupId, artifactId, versionId));
     }
 
     @DELETE
     @Path("/notifications-queue")
-    @ApiOperation("purge queue")
+    @Operation(summary = "purge queue")
     public long purgeQueue()
     {
         validateUser();

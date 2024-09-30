@@ -26,7 +26,7 @@ import org.finos.legend.depot.core.services.api.metrics.configuration.Prometheus
 import org.finos.legend.depot.store.StorageConfiguration;
 import org.finos.legend.server.pac4j.LegendPac4jConfiguration;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 

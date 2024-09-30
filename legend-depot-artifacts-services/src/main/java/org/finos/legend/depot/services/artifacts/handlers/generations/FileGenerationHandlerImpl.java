@@ -29,7 +29,7 @@ import org.finos.legend.sdlc.domain.model.entity.Entity;
 import org.finos.legend.sdlc.serialization.EntityLoader;
 import org.slf4j.Logger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public class FileGenerationHandlerImpl implements FileGenerationsArtifactsHandle
             //handle files generated when a new master snapshot comes into picture
             if (VersionValidator.isSnapshotVersion(versionId))
             {
-                String message = String.format("removing prior %s artifacts for [%s-%s-%s]",provider.getType(), groupId, artifactId, versionId);
+                String message = "removing prior %s artifacts for [%s-%s-%s]".formatted(provider.getType(), groupId, artifactId, versionId);
                 response.addMessage(message);
                 generations.delete(groupId, artifactId, versionId);
                 LOGGER.info(message);
@@ -113,9 +113,9 @@ public class FileGenerationHandlerImpl implements FileGenerationsArtifactsHandle
                 if (!processedGeneratedFiles.contains(generatedFile))
                 {
                     Optional<String> entityPath = entityPaths.stream().filter(s -> generatedFile.getPath().startsWith(PATH_SEPARATOR + s + PATH_SEPARATOR)).findFirst();
-                    if (!entityPath.isPresent())
+                    if (entityPath.isEmpty())
                     {
-                        String unableToHandle = String.format("Can't find element path for generated file with path %s",generatedFile.getPath());
+                        String unableToHandle = "Can't find element path for generated file with path %s".formatted(generatedFile.getPath());
                         LOGGER.warn(unableToHandle);
                     }
                     else
@@ -125,20 +125,20 @@ public class FileGenerationHandlerImpl implements FileGenerationsArtifactsHandle
                         String type = this.getExtensionKeyFromGeneration(generation.getPath(), entityPath.get());
                         if (type.equals(UNKNOWN_TYPE))
                         {
-                            response.addError(String.format("Generation type for file %s is not present", generation.getPath()));
+                            response.addError("Generation type for file %s is not present".formatted(generation.getPath()));
                         }
                         newGenerations.add(new StoredFileGeneration(groupId, artifactId, versionId, elementPath, type, generation));
                     }
                 }
             });
             generations.createOrUpdate(newGenerations);
-            String message = String.format("new [%s] generations for [%s-%s-%s] ", newGenerations.size(), groupId,artifactId, versionId);
+            String message = "new [%s] generations for [%s-%s-%s] ".formatted(newGenerations.size(), groupId, artifactId, versionId);
             LOGGER.info(message);
             response.addMessage(message);
         }
         catch (Exception e)
         {
-           String message = String.format("Error processing generations update for %s-%s-%s , ERROR: [%s]", groupId,artifactId,versionId,e.getMessage());
+           String message = "Error processing generations update for %s-%s-%s , ERROR: [%s]".formatted(groupId, artifactId, versionId, e.getMessage());
            LOGGER.error(message);
            response.addError(message);
         }

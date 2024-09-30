@@ -27,7 +27,7 @@ import org.finos.legend.engine.protocol.pure.v1.model.context.PureModelContextDa
 import org.finos.legend.sdlc.domain.model.entity.Entity;
 import org.finos.legend.sdlc.protocol.pure.v1.PureModelContextDataBuilder;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -84,7 +84,7 @@ public class PureModelContextServiceImpl implements PureModelContextService
     {
         if (clientVersion != null && !PureClientVersions.versions.contains(clientVersion))
         {
-            throw new IllegalArgumentException(String.format("Client version provided is invalid, following are the valid client versions: %s", String.join(", ", PureClientVersions.versions)));
+            throw new IllegalArgumentException("Client version provided is invalid, following are the valid client versions: %s".formatted(String.join(", ", PureClientVersions.versions)));
         }
         return clientVersion == null ? PureClientVersions.production : clientVersion;
     }
